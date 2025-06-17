@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MooderApp.swift
 //  Mooder
 //
 //  Created by Samuel Novotný on 17.06.2025.
@@ -84,3 +84,4 @@ private let itemFormatter: DateFormatter = {
 #Preview {
     ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
+
