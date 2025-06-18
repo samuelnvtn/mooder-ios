@@ -9,12 +9,14 @@ import SwiftUI
 
 struct LoginRegisterView: View {
     @StateObject private var viewModel = AuthViewModel()
+    @Environment(\.colorScheme) var colorScheme
+
 
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "face.smiling")
+            Image(systemName: colorScheme == .dark ? "face.smiling.inverse" : "face.smiling")
                 .resizable()
                 .frame(width: 60, height: 60)
                 .foregroundColor(.blue)

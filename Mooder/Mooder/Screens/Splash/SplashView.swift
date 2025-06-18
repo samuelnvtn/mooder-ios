@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SplashView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         ZStack {
             Color(red: 191/255, green: 212/255, blue: 240/255)
@@ -17,7 +19,7 @@ struct SplashView: View {
                 VStack(alignment: .center, spacing: 0) {
                     HStack(spacing: 0) {
                         Text("MO")
-                        Image(systemName: "face.smiling")
+                        Image(systemName: colorScheme == .dark ? "face.smiling.inverse" : "face.smiling")
                         Text("DER")
                     }
                     .font(.system(size: 40, weight: .bold))
