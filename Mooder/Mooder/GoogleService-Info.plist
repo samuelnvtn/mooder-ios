@@ -26,5 +26,18 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:498626494190:ios:572626de548d074241fdff</string>
+	<key>CLIENT_ID</key>
+	<string>215229046831-4srd6h9p5u8jdmmdncf4o25arbsrcgt1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.215229046831-4srd6h9p5u8jdmmdncf4o25arbsrcgt1</string>
+	<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.googleusercontent.apps.215229046831-4srd6h9p5u8jdmmdncf4o25arbsrcgt1</string> 
+    </array>
+  </dict>
+</array>
 </dict>
 </plist>
