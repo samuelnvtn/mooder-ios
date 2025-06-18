@@ -10,20 +10,57 @@ import SwiftUI
 import FirebaseAuth
 import GoogleSignIn
 import FirebaseCore
+import FirebaseFirestore
 
 class AuthViewModel: ObservableObject {
     @Published var isLoginMode = true
     @Published var username = ""
     @Published var email = ""
     @Published var password = ""
+    @Published var errorMessage: String?
 
     func handleAction() {
         if isLoginMode {
-            print("Logging in with \(email), \(password)")
-            // Později: Firebase login
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    print("❌ Login failed: \(error.localizedDescription)")
+                } else {
+                    print("✅ Logged in as \(result?.user.uid ?? "unknown")")
+                }
+            }
         } else {
-            print("Registering \(username), \(email), \(password)")
-            // Později: Firebase register
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                if let error = error as NSError? {
+                    switch AuthErrorCode(rawValue: error.code) {
+                    case .emailAlreadyInUse:
+                        self.errorMessage = "This email is already in use."
+                    case .invalidEmail:
+                        self.errorMessage = "Invalid email address."
+                    case .weakPassword:
+                        self.errorMessage = "Password must be at least 6 characters."
+                    default:
+                        self.errorMessage = error.localizedDescription
+                    }
+                    print("❌ Registration failed: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let uid = result?.user.uid else { return }
+
+                let userData = [
+                    "username": self.username,
+                    "email": self.email
+                ]
+
+                Firestore.firestore().collection("users").document(uid).setData(userData) { error in
+                    if let error = error {
+                        print("❌ Failed to save user data: \(error.localizedDescription)")
+                    } else {
+                        print("✅ User data saved to Firestore")
+                    }
+                }
+            }
         }
     }
 

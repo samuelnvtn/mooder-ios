@@ -50,6 +50,15 @@ struct LoginRegisterView: View {
             SecureField("Password", text: $viewModel.password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
+            // Error message block
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+
             Button(viewModel.isLoginMode ? "Sign in" : "Register") {
                 viewModel.handleAction()
             }
