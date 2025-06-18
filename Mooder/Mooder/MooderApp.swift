@@ -17,7 +17,7 @@ struct MooderApp: App {
 
     var body: some Scene {
         WindowGroup {
-            LoginRegisterView()
+            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

@@ -9,8 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
+    @State private var showSplash = true
 
     var body: some View {
-        LoginRegisterView()
+        ZStack{
+            if showSplash{
+                SplashView()
+                    .transition(.opacity)
+                    .animation(.easeOut(duration: 1.5))
+            } else {
+                LoginRegisterView()
+            }
+        }
+        .onAppear() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.showSplash = false
+            }
+        }
     }
 }
