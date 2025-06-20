@@ -1,9 +1,4 @@
-//
-//  CoreDataManager.swift
-//  Mooder
-//
-//  Created by Fietstopa on 20.06.2025.
-//
+// CoreDataManager.swift
 
 import CoreData
 
@@ -18,6 +13,9 @@ final class CoreDataManager: MoodDataManaging {
         container.loadPersistentStores { _, error in
             if let error = error {
                 print("❌ Cannot create persistent store: \(error.localizedDescription)")
+            } else {
+                // MARK: - Zde zavolejte funkci pro seeding dat
+                self.seedInitialTagsIfNeeded() // Volání je správné
             }
         }
     }
@@ -36,7 +34,6 @@ final class CoreDataManager: MoodDataManaging {
         }
     }
 
-    
     func removeMood(entry: MoodEntry) {
         context.delete(entry)
         save()
@@ -73,7 +70,25 @@ final class CoreDataManager: MoodDataManaging {
     }
 }
 
+// --- Zde začíná private extension ---
 private extension CoreDataManager {
+    // Tato funkce byla přesunuta sem
+    func seedInitialTagsIfNeeded() {
+        do {
+            let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
+            let count = try context.count(for: request)
+
+            if count == 0 { // Pouze pokud databáze neobsahuje žádné tagy
+                TagSeeder.seedDefaultTags(into: context)
+                print("✅ Default tags seeded successfully.")
+            } else {
+                print("ℹ️ Tags already exist, no seeding needed.")
+            }
+        } catch {
+            print("❌ Error checking for existing tags: \(error.localizedDescription)")
+        }
+    }
+
     func save() {
         if context.hasChanges {
             do {
