@@ -19,8 +19,22 @@ struct ContentView: View {
                     .animation(.easeOut(duration: 1.5), value: showSplash)
             } else {
                 if authViewModel.isLoggedIn {
-                    HomeScreenView(viewModel: HomeScreenViewModel())
-                        .onAppear { print("✅ Showing HomeScreenView") }
+                    TabView {
+                        HomeScreenView(viewModel: HomeScreenViewModel())
+                            .tabItem {
+                                Label("Home", systemImage: "house")
+                            }
+
+                        CalendarScreenView(viewModel: CalendarScreenViewModel())
+                            .tabItem {
+                                Label("Calendar", systemImage: "calendar")
+                            }
+                        
+                        StatsScreenView(viewModel: StatsScreenViewModel())
+                            .tabItem {
+                                Label("Stats", systemImage: "cellularbars")
+                            }
+                    }
                 } else {
                     LoginRegisterView(viewModel: authViewModel)
                         .onAppear { print("🧾 Showing LoginRegisterView") }
