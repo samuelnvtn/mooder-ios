@@ -7,6 +7,20 @@
 
 import SwiftUI
 
+struct CheckboxToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: {
+            configuration.isOn.toggle()
+        }) {
+            HStack {
+                Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+                configuration.label
+            }
+        }
+        .foregroundColor(.primary)
+    }
+}
+
 struct LoginRegisterView: View {
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var viewModel: AuthViewModel
@@ -52,6 +66,10 @@ struct LoginRegisterView: View {
 
             SecureField("Password", text: $viewModel.password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+
+            Toggle("Remember me", isOn: $viewModel.rememberMe)
+                .toggleStyle(CheckboxToggleStyle())
+                .padding(.horizontal)
 
             // Error message block
             if let error = viewModel.errorMessage {

@@ -13,15 +13,22 @@ import FirebaseCore
 import FirebaseFirestore
 
 class AuthViewModel: ObservableObject {
+    @AppStorage("rememberMe") var rememberMe: Bool = false
+    @AppStorage("isUserPersisted") var isUserPersisted: Bool = false
+    
     @Published var isLoginMode = true
     @Published var username = ""
     @Published var email = ""
     @Published var password = ""
     @Published var errorMessage: String?
     @Published var isLoggedIn = false
+    @Published var rememberMeChecked = false
     
     init() {
         print("🔁 AuthViewModel INIT \(UUID().uuidString)")
+        if isUserPersisted {
+            self.isLoggedIn = true
+        }
     }
 
     func handleAction() {
@@ -31,6 +38,9 @@ class AuthViewModel: ObservableObject {
                     self.errorMessage = error.localizedDescription
                     print("❌ Login failed: \(error.localizedDescription)")
                 } else {
+                    if self.rememberMe {
+                        self.isUserPersisted = true
+                    }
                     DispatchQueue.main.async {
                         self.isLoggedIn = true
                     }
@@ -70,6 +80,9 @@ class AuthViewModel: ObservableObject {
                         print("❌ Failed to save user data: \(error.localizedDescription)")
                     } else {
                         print("✅ User data saved to Firestore")
+                        if self.rememberMe {
+                            self.isUserPersisted = true
+                        }
                         DispatchQueue.main.async {
                             print("🚀 Setting isLoggedIn = true")
                             self.isLoginMode = true
