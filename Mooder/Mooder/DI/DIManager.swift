@@ -49,17 +49,7 @@ final class DIContainer {
 extension DIContainer {
     func registerDependencies() {
 
-        register(APIManaging.self, cached: true) {
-            APIManager()
-        }
-
-        register(DataManaging.self, cached: true) {
-            CoreDataManager()
-        }
-        
-        register(LocationManaging.self, cached: true) {
-            LocationManager()
-        }
+      
     }
 }
 
