@@ -10,4 +10,6 @@ import Foundation
 @Observable
 final class CalendarScreenState {
     var moodDates: [Date: MoodEntry] = [:]
+    var selectedDate: Date? = nil
+    var selectedEntry: MoodEntry? = nil
 }

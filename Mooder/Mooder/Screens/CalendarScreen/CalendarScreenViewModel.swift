@@ -18,6 +18,12 @@ class CalendarScreenViewModel: ObservableObject {
         self.context = context
         fetchMoodEntries()
     }
+    
+    func select(date: Date) {
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        state.selectedDate = startOfDay
+        state.selectedEntry = state.moodDates[startOfDay]
+    }
 
     func fetchMoodEntries() {
         let request = NSFetchRequest<MoodEntry>(entityName: "MoodEntry")

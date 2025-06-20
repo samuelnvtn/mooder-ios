@@ -12,11 +12,11 @@ import CoreData
 struct CalendarScreenView: View {
     @StateObject var viewModel: CalendarScreenViewModel
     @StateObject var controller = CalendarController()
-
+    
     
     init(context: NSManagedObjectContext) {
-           _viewModel = StateObject(wrappedValue: CalendarScreenViewModel(context: context))
-       }
+        _viewModel = StateObject(wrappedValue: CalendarScreenViewModel(context: context))
+    }
     
     var body: some View {
         
@@ -61,18 +61,32 @@ struct CalendarScreenView: View {
                             let dateComponents = DateComponents(year: date.year, month: date.month, day: date.day)
                             let startOfDay = calendar.startOfDay(for: calendar.date(from: dateComponents)!)
                             let hasEntry = viewModel.state.moodDates[startOfDay] != nil
-
-                            Text("\(date.day)")
-                                .frame(width: geometry.size.width, height: geometry.size.height)
-                                .font(.system(size: 10, weight: .light))
-                                .opacity(date.isFocusYearMonth ?? false ? 1 : 0.4)
-                                .background(hasEntry ? Color.green.opacity(0.3) : Color.clear)
-                                .clipShape(Circle())
+                            
+                            Button {
+                                viewModel.select(date: startOfDay)
+                            } label: {
+                                Text("\(date.day)")
+                                    .frame(width: geometry.size.width, height: geometry.size.height)
+                                    .font(.system(size: 10, weight: .light))
+                                    .opacity(date.isFocusYearMonth ?? false ? 1 : 0.4)
+                                    .background(hasEntry ? Color.green.opacity(0.3) : Color.clear)
+                                    .clipShape(Circle())
+                            }
                         }
                     })
                 }
             }
         }
         .padding(.horizontal, 16)
+        .sheet(isPresented: Binding(
+            get: { viewModel.state.selectedEntry != nil },
+            set: { if !$0 { viewModel.state.selectedEntry = nil } }
+        )) {
+            if let entry = viewModel.state.selectedEntry {
+                MoodDetailSheet(entry: entry)
+                    .presentationDetents([.height(200)])
+            }
+        }
     }
+    
 }
