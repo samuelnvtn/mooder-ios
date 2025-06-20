@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D264FE972E05AEE00082605A /* SwiftUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = D264FE962E05AEE00082605A /* SwiftUICalendar */; };
 		D2C306482E01E61E00B9013B /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D2C306472E01E61E00B9013B /* FirebaseAnalytics */; };
 		D2C3064A2E01E61E00B9013B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D2C306492E01E61E00B9013B /* FirebaseAuth */; };
 		D2C3064C2E01E61E00B9013B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D2C3064B2E01E61E00B9013B /* FirebaseFirestore */; };
@@ -51,6 +52,7 @@
 				D2C306482E01E61E00B9013B /* FirebaseAnalytics in Frameworks */,
 				D2C306B62E01F1ED00B9013B /* GoogleSignIn in Frameworks */,
 				D2C3064A2E01E61E00B9013B /* FirebaseAuth in Frameworks */,
+				D264FE972E05AEE00082605A /* SwiftUICalendar in Frameworks */,
 				D2C3064C2E01E61E00B9013B /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +101,7 @@
 				D2C3064B2E01E61E00B9013B /* FirebaseFirestore */,
 				D2C306B52E01F1ED00B9013B /* GoogleSignIn */,
 				D2C306B72E01F1ED00B9013B /* GoogleSignInSwift */,
+				D264FE962E05AEE00082605A /* SwiftUICalendar */,
 			);
 			productName = Mooder;
 			productReference = D2C306312E01A9C200B9013B /* Mooder.app */;
@@ -131,6 +134,7 @@
 			packageReferences = (
 				D2C306462E01E61E00B9013B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D2C306B42E01F1ED00B9013B /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				D264FE952E05AEE00082605A /* XCRemoteSwiftPackageReference "SwiftUICalendar" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D2C306322E01A9C200B9013B /* Products */;
@@ -370,6 +374,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		D264FE952E05AEE00082605A /* XCRemoteSwiftPackageReference "SwiftUICalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GGJJack/SwiftUICalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.14;
+			};
+		};
 		D2C306462E01E61E00B9013B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -389,6 +401,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D264FE962E05AEE00082605A /* SwiftUICalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D264FE952E05AEE00082605A /* XCRemoteSwiftPackageReference "SwiftUICalendar" */;
+			productName = SwiftUICalendar;
+		};
 		D2C306472E01E61E00B9013B /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D2C306462E01E61E00B9013B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
