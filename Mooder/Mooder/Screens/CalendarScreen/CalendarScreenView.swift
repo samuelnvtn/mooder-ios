@@ -60,16 +60,17 @@ struct CalendarScreenView: View {
                             let calendar = Calendar.current
                             let dateComponents = DateComponents(year: date.year, month: date.month, day: date.day)
                             let startOfDay = calendar.startOfDay(for: calendar.date(from: dateComponents)!)
-                            let hasEntry = viewModel.state.moodDates[startOfDay] != nil
+                            let moodValue = viewModel.state.moodDates[startOfDay]?.mood ?? 0
+                            let moodColor = MoodLevel(rawValue: moodValue)?.color.opacity(0.3) ?? Color.clear
                             
                             Button {
                                 viewModel.select(date: startOfDay)
                             } label: {
                                 Text("\(date.day)")
-                                    .frame(width: geometry.size.width, height: geometry.size.height)
+                                    .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
                                     .font(.system(size: 10, weight: .light))
-                                    .opacity(date.isFocusYearMonth ?? false ? 1 : 0.4)
-                                    .background(hasEntry ? Color.green.opacity(0.3) : Color.clear)
+                                    .opacity(1)
+                                    .background(moodColor)
                                     .clipShape(Circle())
                             }
                         }
