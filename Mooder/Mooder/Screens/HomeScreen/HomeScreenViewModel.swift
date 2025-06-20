@@ -57,8 +57,13 @@ class HomeScreenViewModel {
            let record = MoodRecord(from: mood) {
             state.selectedMood = record.mood
             state.selectedTags = record.tags
+            state.note = record.note
+            state.isMoodSavedToday = true
+        } else {
+            state.isMoodSavedToday = false
         }
     }
+
 
     func saveMood() {
         let entry = dataManager.fetchMoodForToday() ?? MoodEntry(context: dataManager.context)
@@ -72,5 +77,8 @@ class HomeScreenViewModel {
 
         record.update(entry, using: dataManager.fetchAllTags())
         dataManager.saveMood(entry: entry)
+
+        state.isMoodSavedToday = true
     }
+
 }
