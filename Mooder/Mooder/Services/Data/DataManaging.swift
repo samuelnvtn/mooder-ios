@@ -14,6 +14,7 @@ protocol MoodDataManaging {
     func removeMood(entry: MoodEntry)
     func fetchAllMoods() -> [MoodEntry]
     func fetchMoodForToday() -> MoodEntry?
+    func fetchAllTags() -> [MoodTag]
 
     func addSampleMood()
 }

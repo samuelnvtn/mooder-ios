@@ -8,6 +8,7 @@
         <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MoodTag" inverseName="entries" inverseEntity="MoodTag"/>
     </entity>
     <entity name="MoodTag" representedClassName="MoodTag" syncable="YES" codeGenerationType="class">
+        <attribute name="category" optional="YES" attributeType="String"/>
         <attribute name="icon" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>

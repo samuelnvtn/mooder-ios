@@ -18,13 +18,23 @@ struct MoodRecord: Identifiable {
         guard let id = entity.id,
               let date = entity.date,
               let note = entity.note,
-              let tagSet = entity.tags as? Set<MoodTag> else { return nil }
+              let tagSet = entity.tags as? Set<MoodTag> else {
+            return nil
+        }
 
         self.id = id
         self.date = date
         self.mood = entity.mood
         self.note = note
         self.tags = tagSet.map { MoodTagModel(from: $0) }
+    }
+
+    init(id: UUID, date: Date, mood: Int16, note: String, tags: [MoodTagModel]) {
+        self.id = id
+        self.date = date
+        self.mood = mood
+        self.note = note
+        self.tags = tags
     }
 
     func update(_ entity: MoodEntry, using contextTags: [MoodTag]) {

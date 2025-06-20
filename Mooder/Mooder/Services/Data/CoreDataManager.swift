@@ -26,6 +26,17 @@ final class CoreDataManager: MoodDataManaging {
         save()
     }
 
+    func fetchAllTags() -> [MoodTag] {
+        let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("❌ Failed to fetch tags: \(error.localizedDescription)")
+            return []
+        }
+    }
+
+    
     func removeMood(entry: MoodEntry) {
         context.delete(entry)
         save()
