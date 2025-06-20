@@ -1,9 +1,4 @@
-//
-//  HomeScreenView.swift
-//  Mooder
-//
-//  Created by Fietstopa on 20.06.2025.
-//
+// HomeScreenView.swift
 
 import SwiftUI
 
@@ -55,17 +50,25 @@ struct HomeScreenView: View {
                         Text(category)
                             .font(.headline)
 
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 12)]) {
-                            ForEach(tags) { tag in
-                                Button {
-                                    viewModel.toggleTag(tag)
-                                } label: {
-                                    Label(tag.name, systemImage: tag.iconName)
-                                        .padding(8)
-                                        .background(viewModel.state.selectedTags.contains(tag) ? Color.accentColor.opacity(0.2) : Color(.systemGray6))
-                                        .clipShape(Capsule())
+                        // MARK: - Změny zde pro horizontální scrollování a dynamickou šířku tagů
+                        ScrollView(.horizontal, showsIndicators: false) { // Horizontalní scroll
+                            HStack(spacing: 8) { // Mezera mezi tagy
+                                ForEach(tags) { tag in
+                                    Button {
+                                        viewModel.toggleTag(tag)
+                                    } label: {
+                                        Label(tag.name, systemImage: tag.iconName)
+                                            .font(.caption) // Zmenšený font pro lepší kompaktnost
+                                            .padding(.horizontal, 10) // Horizontální padding
+                                            .padding(.vertical, 6)   // Vertikální padding
+                                            .background(viewModel.state.selectedTags.contains(tag) ? Color.accentColor.opacity(0.2) : Color(.systemGray6))
+                                            .foregroundColor(viewModel.state.selectedTags.contains(tag) ? Color.accentColor : Color.primary) // Barva textu
+                                            .clipShape(Capsule()) // Zaoblený tvar
+                                            .lineLimit(1) // Zabrání zalamování textu
+                                    }
                                 }
                             }
+                            .padding(.vertical, 4) // Trochu vertikálního paddingu pro ScrollView
                         }
                     }
                     .padding(.top, 8)
