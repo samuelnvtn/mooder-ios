@@ -18,8 +18,11 @@ struct ContentView: View {
                     .transition(.opacity)
                     .animation(.easeOut(duration: 1.5))
             } else {
-//                LoginRegisterView()
-                HomeScreenView(viewModel: HomeScreenViewModel())
+                if authViewModel.isLoggedIn {
+                                    HomeScreenView(viewModel: HomeScreenViewModel())
+                                } else {
+                                    LoginRegisterView(viewModel: authViewModel)
+                                }
             }
         }
         .onAppear() {

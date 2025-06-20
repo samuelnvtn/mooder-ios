@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct LoginRegisterView: View {
-    @StateObject private var viewModel = AuthViewModel()
     @Environment(\.colorScheme) var colorScheme
+    @ObservedObject var viewModel: AuthViewModel
+
 
 
     var body: some View {

@@ -18,6 +18,7 @@ class AuthViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var errorMessage: String?
+    @Published var isLoggedIn = false
 
     func handleAction() {
         if isLoginMode {
@@ -26,6 +27,7 @@ class AuthViewModel: ObservableObject {
                     self.errorMessage = error.localizedDescription
                     print("❌ Login failed: \(error.localizedDescription)")
                 } else {
+                    self.isLoggedIn = true
                     print("✅ Logged in as \(result?.user.uid ?? "unknown")")
                 }
             }
@@ -105,6 +107,7 @@ class AuthViewModel: ObservableObject {
                 if let error = error {
                     print("❌ Firebase auth error: \(error.localizedDescription)")
                 } else {
+                    self.isLoggedIn = true
                     print("✅ Logged in with Google")
                 }
             }
