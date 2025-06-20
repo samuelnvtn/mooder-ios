@@ -14,4 +14,6 @@ final class HomeScreenState {
     var selectedTags: [MoodTagModel] = []
     var allTags: [MoodTagModel] = []
     var note: String = ""
+    var isMoodSavedToday: Bool = false
+
 }
