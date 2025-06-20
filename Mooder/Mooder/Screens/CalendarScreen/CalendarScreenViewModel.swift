@@ -7,8 +7,30 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
-@Observable
-class CalendarScreenViewModel {
-    var state = CalendarScreenState()
+
+class CalendarScreenViewModel: ObservableObject {
+    let state = CalendarScreenState()
+    private let context: NSManagedObjectContext
+
+    init(context: NSManagedObjectContext) {
+        self.context = context
+        fetchMoodEntries()
+    }
+
+    func fetchMoodEntries() {
+        let request = NSFetchRequest<MoodEntry>(entityName: "MoodEntry")
+        do {
+            let entries = try context.fetch(request)
+            for entry in entries {
+                if let date = entry.date {
+                    let startOfDay = Calendar.current.startOfDay(for: date)
+                    state.moodDates[startOfDay] = entry
+                }
+            }
+        } catch {
+            print("Failed to fetch mood entries: \(error)")
+        }
+    }
 }

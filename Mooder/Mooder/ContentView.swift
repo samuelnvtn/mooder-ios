@@ -25,7 +25,7 @@ struct ContentView: View {
                                 Label("Home", systemImage: "house")
                             }
 
-                        CalendarScreenView(viewModel: CalendarScreenViewModel())
+                        CalendarScreenView(context: CoreDataManager().context)
                             .tabItem {
                                 Label("Calendar", systemImage: "calendar")
                             }

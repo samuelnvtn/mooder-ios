@@ -7,12 +7,16 @@
 
 import SwiftUI
 import SwiftUICalendar
+import CoreData
 
 struct CalendarScreenView: View {
-    let viewModel: CalendarScreenViewModel
+    @StateObject var viewModel: CalendarScreenViewModel
+    @StateObject var controller = CalendarController()
+
     
-    @ObservedObject var controller: CalendarController = CalendarController()
-    
+    init(context: NSManagedObjectContext) {
+           _viewModel = StateObject(wrappedValue: CalendarScreenViewModel(context: context))
+       }
     
     var body: some View {
         
@@ -20,7 +24,7 @@ struct CalendarScreenView: View {
             Text("Mood timeline")
                 .font(.title)
                 .bold()
-                .padding(.top, 16)
+                .padding(.top)
             
             
             GeometryReader { reader in
@@ -32,16 +36,20 @@ struct CalendarScreenView: View {
                         }
                         .padding(8)
                         Spacer()
-                        Text("\(controller.yearMonth.monthShortString), \(String(controller.yearMonth.year))")
-                            .font(.title)
-                            .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                        Button(action: {
+                            controller.scrollTo(YearMonth.current, isAnimate: true)
+                        }) {
+                            Text("\(controller.yearMonth.monthShortString), \(String(controller.yearMonth.year))")
+                                .font(.title)
+                                .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                        }
                         Spacer()
                         Button("Next") {
                             controller.scrollTo(controller.yearMonth.addMonth(value: 1), isAnimate: true)
                         }
                         .padding(8)
                     }
-                    CalendarView(controller, header: { week in
+                    CalendarView(controller, startWithMonday: true, header: { week in
                         GeometryReader { geometry in
                             Text(week.shortString)
                                 .font(.subheadline)
@@ -49,10 +57,17 @@ struct CalendarScreenView: View {
                         }
                     }, component: { date in
                         GeometryReader { geometry in
+                            let calendar = Calendar.current
+                            let dateComponents = DateComponents(year: date.year, month: date.month, day: date.day)
+                            let startOfDay = calendar.startOfDay(for: calendar.date(from: dateComponents)!)
+                            let hasEntry = viewModel.state.moodDates[startOfDay] != nil
+
                             Text("\(date.day)")
-                                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
-                                .font(.system(size: 10, weight: .light, design: .default))
-                                .opacity(date.isFocusYearMonth == true ? 1 : 0.4)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .font(.system(size: 10, weight: .light))
+                                .opacity(date.isFocusYearMonth ?? false ? 1 : 0.4)
+                                .background(hasEntry ? Color.green.opacity(0.3) : Color.clear)
+                                .clipShape(Circle())
                         }
                     })
                 }
