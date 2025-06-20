@@ -14,9 +14,7 @@ final class DIContainer {
 
     static let shared = DIContainer()
 
-    init() {
-        registerDependencies()
-    }
+   
 
     func register<T, R>(_ type: T.Type, cached: Bool = false, service: @escaping () -> R) {
         let key = String(reflecting: type)
@@ -43,23 +41,6 @@ final class DIContainer {
         }
 
         fatalError("🥣 \(key) has not been registered.")
-    }
-}
-
-extension DIContainer {
-    func registerDependencies() {
-
-        register(APIManaging.self, cached: true) {
-            APIManager()
-        }
-
-        register(DataManaging.self, cached: true) {
-            CoreDataManager()
-        }
-        
-        register(LocationManaging.self, cached: true) {
-            LocationManager()
-        }
     }
 }
 
