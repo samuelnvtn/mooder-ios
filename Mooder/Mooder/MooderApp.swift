@@ -10,7 +10,7 @@ import FirebaseCore
 
 @main
 struct MooderApp: App {
-    let persistenceController = PersistenceController.shared
+    
     init() {
     }
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -18,7 +18,6 @@ struct MooderApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
