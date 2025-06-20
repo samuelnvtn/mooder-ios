@@ -66,7 +66,7 @@ class HomeScreenViewModel {
             id: entry.id ?? UUID(),
             date: state.today,
             mood: state.selectedMood,
-            note: "",
+            note: state.note,
             tags: state.selectedTags
         )
 

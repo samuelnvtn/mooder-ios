@@ -73,7 +73,16 @@ struct HomeScreenView: View {
                     }
                     .padding(.top, 8)
                 }
-
+                
+                TextField("Note", text: $viewModel.state.note)
+                    .padding(12)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                
                 Button("Save") {
                     viewModel.saveMood()
                 }

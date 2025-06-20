@@ -13,4 +13,5 @@ final class HomeScreenState {
     var selectedMood: Int16 = 3
     var selectedTags: [MoodTagModel] = []
     var allTags: [MoodTagModel] = []
+    var note: String = ""
 }
