@@ -19,6 +19,10 @@ class AuthViewModel: ObservableObject {
     @Published var password = ""
     @Published var errorMessage: String?
     @Published var isLoggedIn = false
+    
+    init() {
+        print("🔁 AuthViewModel INIT \(UUID().uuidString)")
+    }
 
     func handleAction() {
         if isLoginMode {
@@ -27,7 +31,9 @@ class AuthViewModel: ObservableObject {
                     self.errorMessage = error.localizedDescription
                     print("❌ Login failed: \(error.localizedDescription)")
                 } else {
-                    self.isLoggedIn = true
+                    DispatchQueue.main.async {
+                        self.isLoggedIn = true
+                    }
                     print("✅ Logged in as \(result?.user.uid ?? "unknown")")
                 }
             }
@@ -48,7 +54,11 @@ class AuthViewModel: ObservableObject {
                     return
                 }
 
-                guard let uid = result?.user.uid else { return }
+                guard let uid = result?.user.uid else {
+                    print("❌ UID is nil")
+                    return
+                }
+                print("✅ Registration success, UID: \(uid)")
 
                 let userData = [
                     "username": self.username,
@@ -60,6 +70,11 @@ class AuthViewModel: ObservableObject {
                         print("❌ Failed to save user data: \(error.localizedDescription)")
                     } else {
                         print("✅ User data saved to Firestore")
+                        DispatchQueue.main.async {
+                            print("🚀 Setting isLoggedIn = true")
+                            self.isLoginMode = true
+                            self.isLoggedIn = true
+                        }
                     }
                 }
             }
@@ -107,7 +122,9 @@ class AuthViewModel: ObservableObject {
                 if let error = error {
                     print("❌ Firebase auth error: \(error.localizedDescription)")
                 } else {
-                    self.isLoggedIn = true
+                    DispatchQueue.main.async {
+                        self.isLoggedIn = true
+                    }
                     print("✅ Logged in with Google")
                 }
             }

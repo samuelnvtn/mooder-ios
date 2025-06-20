@@ -16,19 +16,24 @@ struct ContentView: View {
             if showSplash{
                 SplashView()
                     .transition(.opacity)
-                    .animation(.easeOut(duration: 1.5))
+                    .animation(.easeOut(duration: 1.5), value: showSplash)
             } else {
                 if authViewModel.isLoggedIn {
-                                    HomeScreenView(viewModel: HomeScreenViewModel())
-                                } else {
-                                    LoginRegisterView(viewModel: authViewModel)
-                                }
+                    HomeScreenView(viewModel: HomeScreenViewModel())
+                        .onAppear { print("✅ Showing HomeScreenView") }
+                } else {
+                    LoginRegisterView(viewModel: authViewModel)
+                        .onAppear { print("🧾 Showing LoginRegisterView") }
+                }
             }
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.showSplash = false
             }
+        }
+        .onChange(of: authViewModel.isLoggedIn) { newValue in
+            print("🔄 authViewModel.isLoggedIn changed: \(newValue)")
         }
     }
 }
