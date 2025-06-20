@@ -36,42 +36,48 @@ struct MoodDetailSheet: View {
 
             if let note = entry.note, let tags = entry.tags as? Set<MoodTag> {
                 ZStack(alignment: .topLeading) {
-                    HStack(spacing: 8) {
-                        if !note.isEmpty {
-                            HStack(spacing: 4) {
-                                Circle()
-                                    .fill(moodColor)
-                                    .frame(width: 8, height: 8)
-                                Text(note)
-                            }
-                        }
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(moodColor)
+                                .frame(width: 8, height: 8)
 
-                        ForEach(Array(tags)
-                            .compactMap { MoodTagModel(from: $0) }
-                            .sorted(by: { $0.name < $1.name })) { tag in
-                            GeometryReader { geo in
-                                Button(action: {
-                                    shownTagName = tag.name
-                                    labelPosition = geo.frame(in: .named("capsuleArea")).origin
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                                        withAnimation(.easeOut(duration: 0.5)) {
-                                            shownTagName = nil
+                            ForEach(Array(tags)
+                                .compactMap { MoodTagModel(from: $0) }
+                                .sorted(by: { $0.name < $1.name })) { tag in
+                                GeometryReader { geo in
+                                    Button(action: {
+                                        shownTagName = tag.name
+                                        labelPosition = geo.frame(in: .named("capsuleArea")).origin
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                            withAnimation(.easeOut(duration: 0.5)) {
+                                                shownTagName = nil
+                                            }
                                         }
+                                    }) {
+                                        Image(systemName: tag.iconName)
+                                            .rotationEffect(.degrees(shakeAngle))
                                     }
-                                }) {
-                                    Image(systemName: tag.iconName)
-                                        .rotationEffect(.degrees(shakeAngle))
+                                    .frame(width: 24, height: 24)
                                 }
                                 .frame(width: 24, height: 24)
                             }
-                            .frame(width: 24, height: 24)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(Color(.systemGray5))
+                        .clipShape(Capsule())
+                        .coordinateSpace(name: "capsuleArea")
+                        .padding(.bottom, 24)
+
+                        if !note.isEmpty {
+                            HStack(spacing: 4) {
+                                Text(note)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.leading)
+                            }
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(Color(.systemGray5))
-                    .clipShape(Capsule())
-                    .coordinateSpace(name: "capsuleArea")
 
                     if let tagName = shownTagName, let position = labelPosition {
                         Text(tagName)
