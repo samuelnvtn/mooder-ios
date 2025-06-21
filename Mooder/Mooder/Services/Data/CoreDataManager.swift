@@ -21,15 +21,8 @@ final class CoreDataManager: MoodDataManaging {
     }
 
     func saveMood(entry: MoodEntry) {
-        if context.insertedObjects.contains(entry) == false {
-            context.insert(entry)
-        }
         save()
-        
-        // Upload do Firestore
-        FirestoreSyncManager().uploadMood(entry)
     }
-
 
     func fetchAllTags() -> [MoodTag] {
         let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
@@ -75,16 +68,6 @@ final class CoreDataManager: MoodDataManaging {
             return nil
         }
     }
-    
-    func saveSyncedMood(from data: MoodEntryData) {
-        let entry = MoodEntry(context: context)
-        entry.id = data.id
-        entry.mood = Int16(data.mood)
-        entry.date = data.date
-        entry.note = data.note
-        save()
-    }
-
 }
 
 // --- Zde začíná private extension ---
