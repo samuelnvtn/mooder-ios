@@ -8,6 +8,7 @@
 //  StatsScreenView.swift
 //  Mooder
 
+
 import SwiftUI
 
 struct StatsScreenView: View {
@@ -20,18 +21,40 @@ struct StatsScreenView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                // Přepínač grafů
                 Picker("Mode", selection: $viewModel.state.chartMode) {
                     Text("Graph").tag(ChartMode.bar)
                     Text("Pie Chart").tag(ChartMode.pie)
                 }
                 .pickerStyle(.segmented)
 
+                // Týdenní navigace
+                HStack {
+                    Button("← Previous") {
+                        viewModel.previousWeek()
+                    }
+                    Spacer()
+                        Text(viewModel.formattedCurrentWeekRange())
+                            .font(.subheadline)
+                            .monospacedDigit()
+                        Spacer()
+                    Button("Next →") {
+                        viewModel.nextWeek()
+                    }
+                }
+                .padding(.horizontal)
+
+                // Zobrazení grafu
                 if viewModel.state.chartMode == .bar {
-                    MoodBarChartView(moods: viewModel.state.moodData)
+                    MoodBarChartView(
+                        moods: viewModel.state.moodData,
+                        weekDates: viewModel.currentWeekDates()
+                    )
                 } else {
                     MoodPieChartView(moods: viewModel.state.moodData)
                 }
 
+                // Přehled nálad
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Mood Overview")
                         .font(.headline)
