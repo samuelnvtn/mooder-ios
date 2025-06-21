@@ -21,7 +21,7 @@ struct ContentView: View {
             } else {
                 if authViewModel.isLoggedIn {
                     TabView {
-                        HomeScreenView(viewModel: HomeScreenViewModel(calendarViewModel: calendarViewModel)).environmentObject(authViewModel)
+                        HomeScreenView(viewModel: HomeScreenViewModel(calendarViewModel: calendarViewModel))
                             .tabItem {
                                 Label("Home", systemImage: "house")
                             }
