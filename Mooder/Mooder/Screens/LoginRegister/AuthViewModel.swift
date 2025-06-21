@@ -16,6 +16,7 @@ class AuthViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoggedIn = false
     @Published var rememberMeChecked = false
+    @Published var moodsDidSync = false
 
     private let coreDataManager = CoreDataManager() // reusujeme ho
 
@@ -140,10 +141,13 @@ class AuthViewModel: ObservableObject {
             }
         }
     }
-
+    
+    
     private func syncFromFirestore() {
         print("🔄 Starting sync from Firestore...")
         let syncManager = FirestoreSyncManager()
+
+        coreDataManager.clearAllMoods()
 
         syncManager.fetchMoods { moods in
             DispatchQueue.main.async {
@@ -152,7 +156,12 @@ class AuthViewModel: ObservableObject {
                     self.coreDataManager.saveSyncedMood(from: mood)
                 }
                 print("✅ All moods saved to CoreData")
+                
+                // 💥 TADY, až teď to můžeš pustit
+                self.moodsDidSync = true
             }
         }
     }
+
+
 }
