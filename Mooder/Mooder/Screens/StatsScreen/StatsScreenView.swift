@@ -48,8 +48,7 @@ struct StatsScreenView: View {
         }
         .navigationTitle("Statistics")
         .onAppear {
-//            viewModel.loadData()
-            viewModel.loadMockData()
+            viewModel.loadData()
         }
     }
 }
