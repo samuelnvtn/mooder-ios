@@ -12,6 +12,7 @@ import CoreData
 struct CalendarScreenView: View {
     @StateObject var viewModel: CalendarScreenViewModel
     @StateObject var controller = CalendarController()
+    @State private var calendarRefreshID = UUID()
     
     
     init(context: NSManagedObjectContext) {
@@ -66,6 +67,7 @@ struct CalendarScreenView: View {
                             
                             Button {
                                 viewModel.select(date: startOfDay)
+                                calendarRefreshID = UUID()
                             } label: {
                                 Text("\(date.day)")
                                     .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
@@ -81,6 +83,7 @@ struct CalendarScreenView: View {
                             }
                         }
                     })
+                    .id(calendarRefreshID)
                 }
             }
         }

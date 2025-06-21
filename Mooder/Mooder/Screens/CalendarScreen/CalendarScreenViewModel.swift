@@ -41,7 +41,23 @@ class CalendarScreenViewModel: ObservableObject {
     }
 
     func reloadData() {
-        state.moodDates.removeAll()
-        fetchMoodEntries()
+        var newState = CalendarScreenState()
+        newState.moodDates = [:]
+        let request = NSFetchRequest<MoodEntry>(entityName: "MoodEntry")
+        do {
+            let entries = try context.fetch(request)
+            for entry in entries {
+                if let date = entry.date {
+                    let startOfDay = Calendar.current.startOfDay(for: date)
+                    newState.moodDates[startOfDay] = entry
+                }
+            }
+            newState.selectedDate = state.selectedDate
+            newState.selectedEntry = newState.moodDates[state.selectedDate ?? Date()]
+            self.state = newState 
+            objectWillChange.send()
+        } catch {
+            print("❌ Failed to fetch mood entries: \(error)")
+        }
     }
 }
