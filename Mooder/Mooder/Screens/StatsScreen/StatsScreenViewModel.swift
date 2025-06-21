@@ -11,15 +11,21 @@ class StatsScreenViewModel {
     var state = StatsScreenState()
     private let dataManager: MoodDataManaging
     private var currentWeekStart: Date = Date().startOfWeek()
-
+    
+    var allMoods: [MoodEntry] {
+        dataManager.fetchAllMoods()
+    }
     init(dataManager: MoodDataManaging = CoreDataManager()) {
         self.dataManager = dataManager
     }
     func loadData() {
         let moods = dataManager.fetchAllMoods()
+        let weekDates = currentWeekDates()
+        guard let start = weekDates.first, let end = weekDates.last else { return }
+
         state.moodData = moods.filter {
             guard let date = $0.date else { return false }
-            return Calendar.current.isDate(date, equalTo: currentWeekStart, toGranularity: .weekOfYear)
+            return date >= start && date <= end
         }
 
         let values = state.moodData.map { $0.mood }
@@ -42,6 +48,23 @@ class StatsScreenViewModel {
         currentWeekStart = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: currentWeekStart)!
         loadData()
     }
+    
+    private var allMoodDates: [Date] {
+        dataManager.fetchAllMoods().compactMap { $0.date }
+    }
+
+    var canGoToPreviousWeek: Bool {
+        guard let firstDate = allMoodDates.min() else { return false }
+        return currentWeekStart > firstDate.startOfWeek()
+    }
+
+    var canGoToNextWeek: Bool {
+        guard let lastDate = allMoodDates.max() else { return false }
+        let nextWeekStart = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: currentWeekStart)!
+        return nextWeekStart <= lastDate.startOfWeek()
+    }
+
+    
     
     func formattedCurrentWeekRange() -> String {
         let dates = currentWeekDates()

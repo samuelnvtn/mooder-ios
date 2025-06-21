@@ -5,10 +5,6 @@
 //  Created by Samuel Novotný on 20.06.2025.
 //
 
-//  StatsScreenView.swift
-//  Mooder
-
-
 import SwiftUI
 
 struct StatsScreenView: View {
@@ -21,37 +17,51 @@ struct StatsScreenView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                
                 // Přepínač grafů
                 Picker("Mode", selection: $viewModel.state.chartMode) {
                     Text("Graph").tag(ChartMode.bar)
                     Text("Pie Chart").tag(ChartMode.pie)
                 }
                 .pickerStyle(.segmented)
-
-                // Týdenní navigace
-                HStack {
-                    Button("← Previous") {
-                        viewModel.previousWeek()
-                    }
-                    Spacer()
-                        Text(viewModel.formattedCurrentWeekRange())
-                            .font(.subheadline)
-                            .monospacedDigit()
-                        Spacer()
-                    Button("Next →") {
-                        viewModel.nextWeek()
-                    }
-                }
                 .padding(.horizontal)
 
                 // Zobrazení grafu
                 if viewModel.state.chartMode == .bar {
+                    HStack {
+                        Button("← Previous") {
+                            viewModel.previousWeek()
+                        }
+                        .disabled(!viewModel.canGoToPreviousWeek)
+                        .opacity(viewModel.canGoToPreviousWeek ? 1 : 0.3)
+
+                        Spacer()
+
+                        Text(viewModel.formattedCurrentWeekRange())
+                            .font(.subheadline)
+                            .monospacedDigit()
+
+                        Spacer()
+
+                        Button("Next →") {
+                            viewModel.nextWeek()
+                        }
+                        .disabled(!viewModel.canGoToNextWeek)
+                        .opacity(viewModel.canGoToNextWeek ? 1 : 0.3)
+                    }
+                    .padding(.horizontal)
+
                     MoodBarChartView(
                         moods: viewModel.state.moodData,
                         weekDates: viewModel.currentWeekDates()
                     )
+
+                    // Týdenní navigace – jen pro bar chart
+                   
+
                 } else {
-                    MoodPieChartView(moods: viewModel.state.moodData)
+                    // Pie chart pro celou historii
+                    MoodPieChartView(moods: viewModel.allMoods)
                 }
 
                 // Přehled nálad
