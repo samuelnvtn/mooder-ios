@@ -17,7 +17,7 @@ struct TagSeeder {
             ("Sleep", "moon.fill", "Body & Health"),
             ("Exercise", "figure.walk", "Body & Health"),
             ("Healthy Food", "carrot.fill", "Body & Health"),
-            ("Unhealthy Food", "fastfood.fill", "Body & Health"),
+            ("Unhealthy Food", "popcorn.fill", "Body & Health"),
             ("Headache", "brain.head.profile", "Body & Health"),
             ("Energy", "bolt.fill", "Body & Health"),
             ("Fatigue", "bed.double.fill", "Body & Health"),
