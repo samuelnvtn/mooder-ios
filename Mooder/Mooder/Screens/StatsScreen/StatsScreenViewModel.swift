@@ -33,6 +33,8 @@ class StatsScreenViewModel {
         state.worstWeekText = "😭 March 5 – Disappointed"
         state.streakText = "🔥 5 days feeling good or better"
     }
+    
+
 }
 
 
