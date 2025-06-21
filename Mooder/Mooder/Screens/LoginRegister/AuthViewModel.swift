@@ -1,10 +1,3 @@
-//
-//  AuthViewModel.swift
-//  Mooder
-//
-//  Created by Samuel Novotný on 18.06.2025.
-//
-
 import Foundation
 import SwiftUI
 import FirebaseAuth
@@ -23,7 +16,9 @@ class AuthViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoggedIn = false
     @Published var rememberMeChecked = false
-    
+
+    private let coreDataManager = CoreDataManager() // reusujeme ho
+
     init() {
         print("🔁 AuthViewModel INIT \(UUID().uuidString)")
         if isUserPersisted {
@@ -43,6 +38,7 @@ class AuthViewModel: ObservableObject {
                     }
                     DispatchQueue.main.async {
                         self.isLoggedIn = true
+                        self.syncFromFirestore()
                     }
                     print("✅ Logged in as \(result?.user.uid ?? "unknown")")
                 }
@@ -84,9 +80,9 @@ class AuthViewModel: ObservableObject {
                             self.isUserPersisted = true
                         }
                         DispatchQueue.main.async {
-                            print("🚀 Setting isLoggedIn = true")
                             self.isLoginMode = true
                             self.isLoggedIn = true
+                            self.syncFromFirestore()
                         }
                     }
                 }
@@ -97,7 +93,7 @@ class AuthViewModel: ObservableObject {
     func toggleMode(toLogin: Bool) {
         isLoginMode = toLogin
     }
-    
+
     func signInWithGoogle() {
         print("🔍 Google sign-in tapped")
 
@@ -137,9 +133,25 @@ class AuthViewModel: ObservableObject {
                 } else {
                     DispatchQueue.main.async {
                         self.isLoggedIn = true
+                        self.syncFromFirestore()
                     }
                     print("✅ Logged in with Google")
                 }
+            }
+        }
+    }
+
+    private func syncFromFirestore() {
+        print("🔄 Starting sync from Firestore...")
+        let syncManager = FirestoreSyncManager()
+
+        syncManager.fetchMoods { moods in
+            DispatchQueue.main.async {
+                print("📥 Downloaded \(moods.count) moods from Firestore")
+                for mood in moods {
+                    self.coreDataManager.saveSyncedMood(from: mood)
+                }
+                print("✅ All moods saved to CoreData")
             }
         }
     }
