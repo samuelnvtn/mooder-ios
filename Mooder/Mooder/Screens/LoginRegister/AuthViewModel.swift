@@ -142,10 +142,16 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    
     private func syncFromFirestore() {
         print("🔄 Starting sync from Firestore...")
         let syncManager = FirestoreSyncManager()
+
+        syncManager.onSyncComplete = {
+            DispatchQueue.main.async {
+                print("✅ Firebase sync complete – triggering moodsDidSync")
+                self.moodsDidSync = true
+            }
+        }
 
         coreDataManager.clearAllMoods()
 
@@ -156,9 +162,7 @@ class AuthViewModel: ObservableObject {
                     self.coreDataManager.saveSyncedMood(from: mood)
                 }
                 print("✅ All moods saved to CoreData")
-                
-                // 💥 TADY, až teď to můžeš pustit
-                self.moodsDidSync = true
+                // `onSyncComplete` se zavolá uvnitř `FirestoreSyncManager` po tomto
             }
         }
     }

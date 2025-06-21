@@ -10,6 +10,11 @@ import FirebaseAuth
 
 final class FirestoreSyncManager {
     private let db = Firestore.firestore()
+    
+    /// Callback, který se zavolá po dokončení fetchování mood dat
+    var onSyncComplete: (() -> Void)?
+
+    // MARK: - Upload Mood
     func uploadMood(_ entry: MoodEntry) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         guard let id = entry.id else {
@@ -17,7 +22,6 @@ final class FirestoreSyncManager {
             return
         }
 
-        // ✨ Připravíme pole slovníků pro každý tag
         let tagsArray = entry.tags?.compactMap { tag in
             guard let tag = tag as? MoodTag else { return nil }
             return [
@@ -28,7 +32,6 @@ final class FirestoreSyncManager {
             ]
         } ?? []
 
-        // 🧾 Kompletní mood data včetně tagů
         let data: [String: Any] = [
             "mood": entry.mood,
             "date": entry.date ?? Date(),
@@ -36,7 +39,6 @@ final class FirestoreSyncManager {
             "tags": tagsArray
         ]
 
-        // 📤 Upload do Firestore
         db.collection("users").document(uid)
             .collection("moods")
             .document(id.uuidString)
@@ -49,7 +51,7 @@ final class FirestoreSyncManager {
             }
     }
 
-
+    // MARK: - Fetch Moods
     func fetchMoods(completion: @escaping ([MoodEntryData]) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 
@@ -71,15 +73,21 @@ final class FirestoreSyncManager {
                     mood: mood,
                     date: timestamp.dateValue(),
                     note: data["note"] as? String ?? "",
-                    tagDicts: data["tags"] as? [[String: Any]] // 💥 Přidat tohle
-)
+                    tagDicts: data["tags"] as? [[String: Any]]
+                )
             } ?? []
 
             completion(moods)
+
+            // ✅ Zavoláme callback, že sync je ready
+            DispatchQueue.main.async {
+                self.onSyncComplete?()
+            }
         }
     }
 }
 
+// MARK: - Mood Entry DTO
 struct MoodEntryData {
     let id: UUID
     let mood: Int
@@ -87,4 +95,3 @@ struct MoodEntryData {
     let note: String
     let tagDicts: [[String: Any]]?
 }
-
