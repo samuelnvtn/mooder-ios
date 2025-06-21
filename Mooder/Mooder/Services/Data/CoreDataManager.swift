@@ -51,6 +51,20 @@ final class CoreDataManager: MoodDataManaging {
         }
     }
 
+    func clearAllMoods() {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MoodEntry")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+            print("🧹 Cleared all local moods")
+        } catch {
+            print("❌ Failed to clear moods: \(error.localizedDescription)")
+        }
+    }
+
+    
     func fetchMoodForToday() -> MoodEntry? {
         let request = NSFetchRequest<MoodEntry>(entityName: "MoodEntry")
         let calendar = Calendar.current
@@ -68,6 +82,32 @@ final class CoreDataManager: MoodDataManaging {
             return nil
         }
     }
+    
+    func saveSyncedMood(from data: MoodEntryData) {
+        let entry = MoodEntry(context: context)
+        entry.id = data.id
+        entry.mood = Int16(data.mood)
+        entry.date = data.date
+        entry.note = data.note
+
+        // 💥 OPRAVA: Zpracujeme tagDicts
+        if let tagDicts = data.tagDicts {
+            let tags = tagDicts.compactMap { dict -> MoodTag? in
+                let tag = MoodTag(context: context)
+                tag.name = dict["name"] as? String ?? ""
+                tag.icon = dict["icon"] as? String ?? ""
+                tag.category = dict["category"] as? String ?? ""
+                tag.id = UUID(uuidString: dict["id"] as? String ?? "") ?? UUID()
+                return tag
+            }
+
+            entry.tags = NSSet(array: tags)
+        }
+
+        save()
+    }
+
+
 }
 
 // --- Zde začíná private extension ---

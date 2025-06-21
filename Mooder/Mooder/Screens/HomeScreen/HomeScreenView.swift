@@ -1,9 +1,9 @@
 // HomeScreenView.swift
-
 import SwiftUI
 
 struct HomeScreenView: View {
     @State private var viewModel: HomeScreenViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel // 💥 přidáš tohle
 
     init(viewModel: HomeScreenViewModel) {
         self._viewModel = State(initialValue: viewModel)
@@ -40,7 +40,6 @@ struct HomeScreenView: View {
                             .foregroundColor(.green)
                     }
                 } else {
-                    // Původní výběr nálady, tagů a poznámky
                     VStack {
                         ForEach(viewModel.moodOptions, id: \.value) { mood in
                             Button {
@@ -116,6 +115,11 @@ struct HomeScreenView: View {
         .onAppear {
             viewModel.loadToday()
         }
+        .onReceive(authViewModel.$moodsDidSync) { synced in
+            if synced {
+                print("🔁 Sync detected, reloading today's mood")
+                viewModel.loadToday()
+            }
+        }
     }
-
 }

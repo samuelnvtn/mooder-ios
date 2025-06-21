@@ -23,7 +23,10 @@ class AuthViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoggedIn = false
     @Published var rememberMeChecked = false
-    
+    @Published var moodsDidSync = false
+
+    private let coreDataManager = CoreDataManager() // reusujeme ho
+
     init() {
         print("🔁 AuthViewModel INIT \(UUID().uuidString)")
         if isUserPersisted {
@@ -143,4 +146,31 @@ class AuthViewModel: ObservableObject {
             }
         }
     }
+    
+    private func syncFromFirestore() {
+        print("🔄 Starting sync from Firestore...")
+        let syncManager = FirestoreSyncManager()
+
+        syncManager.onSyncComplete = {
+            DispatchQueue.main.async {
+                print("✅ Firebase sync complete – triggering moodsDidSync")
+                self.moodsDidSync = true
+            }
+        }
+
+        coreDataManager.clearAllMoods()
+
+        syncManager.fetchMoods { moods in
+            DispatchQueue.main.async {
+                print("📥 Downloaded \(moods.count) moods from Firestore")
+                for mood in moods {
+                    self.coreDataManager.saveSyncedMood(from: mood)
+                }
+                print("✅ All moods saved to CoreData")
+                // `onSyncComplete` se zavolá uvnitř `FirestoreSyncManager` po tomto
+            }
+        }
+    }
+
+
 }
