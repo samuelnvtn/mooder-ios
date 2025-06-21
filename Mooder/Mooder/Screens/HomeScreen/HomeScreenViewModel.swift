@@ -12,9 +12,12 @@ import SwiftUI
 class HomeScreenViewModel {
     var state = HomeScreenState()
     private let dataManager: MoodDataManaging
+    private var calendarViewModel: CalendarScreenViewModel?
 
-    init(dataManager: MoodDataManaging = CoreDataManager()) {
+    init(dataManager: MoodDataManaging = CoreDataManager(), calendarViewModel: CalendarScreenViewModel? = nil) {
         self.dataManager = dataManager
+        self.calendarViewModel = calendarViewModel
+        loadToday()
     }
 
     let moodOptions: [(value: Int16, emoji: String, label: String)] = [
@@ -79,6 +82,7 @@ class HomeScreenViewModel {
         dataManager.saveMood(entry: entry)
 
         state.isMoodSavedToday = true
+        calendarViewModel?.reloadData()
     }
 
 }

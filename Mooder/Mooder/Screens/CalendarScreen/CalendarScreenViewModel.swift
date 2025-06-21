@@ -11,9 +11,9 @@ import CoreData
 
 
 class CalendarScreenViewModel: ObservableObject {
-    let state = CalendarScreenState()
-    private let context: NSManagedObjectContext
-
+    @Published var state = CalendarScreenState()
+    let context: NSManagedObjectContext
+    
     init(context: NSManagedObjectContext) {
         self.context = context
         fetchMoodEntries()
@@ -38,5 +38,10 @@ class CalendarScreenViewModel: ObservableObject {
         } catch {
             print("Failed to fetch mood entries: \(error)")
         }
+    }
+
+    func reloadData() {
+        state.moodDates.removeAll()
+        fetchMoodEntries()
     }
 }
