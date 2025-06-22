@@ -16,8 +16,12 @@ struct StatsScreenView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 16) {
                 
+                Text("Statistics")
+                    .font(.title)
+                    .bold()                
+                 
                 // Přepínač grafů
                 Picker("Mode", selection: $viewModel.state.chartMode) {
                     Text("Graph").tag(ChartMode.bar)
@@ -73,12 +77,15 @@ struct StatsScreenView: View {
                     Text("Worst Week: \(viewModel.state.worstWeekText)")
                     Text("Mood Streak: \(viewModel.state.streakText)")
                 }
-                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading)
+                .padding(.trailing)
+                .padding(.vertical, 12)
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
+            .padding()
         }
-        .navigationTitle("Statistics")
         .onAppear {
             viewModel.loadData()
         }

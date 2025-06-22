@@ -21,7 +21,7 @@ struct CalendarScreenView: View {
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
-            Text("Mood timeline")
+            Text("Timeline")
                 .font(.title)
                 .bold()
                 .padding(.top)
