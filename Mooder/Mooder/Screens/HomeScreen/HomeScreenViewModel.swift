@@ -54,18 +54,23 @@ class HomeScreenViewModel {
 
     func loadToday() {
         state.today = Calendar.current.startOfDay(for: Date())
-        state.allTags = dataManager.fetchAllTags().map { MoodTagModel(from: $0) }
+        state.allTags = dataManager.fetchOnlySeededTags().map { MoodTagModel(from: $0) }
 
         if let mood = dataManager.fetchMoodForToday(),
            let record = MoodRecord(from: mood) {
             state.selectedMood = record.mood
-            state.selectedTags = record.tags
             state.note = record.note
+
+            // ⚠️ Filteruj uložené tagy jen na ty seedované
+            let allowedTags = Set(state.allTags)
+            state.selectedTags = record.tags.filter { allowedTags.contains($0) }
+
             state.isMoodSavedToday = true
         } else {
             state.isMoodSavedToday = false
         }
     }
+
 
 
     func saveMood() {

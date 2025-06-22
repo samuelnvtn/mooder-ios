@@ -81,6 +81,8 @@ struct CalendarScreenView: View {
                             }
                         }
                     })
+                }.onAppear {
+                    viewModel.reloadData()   // ⬅️ vždy si znova načti položky
                 }
             }
         }

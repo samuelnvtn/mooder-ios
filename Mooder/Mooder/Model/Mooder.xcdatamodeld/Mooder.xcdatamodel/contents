@@ -11,6 +11,7 @@
         <attribute name="category" optional="YES" attributeType="String"/>
         <attribute name="icon" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isSeeded" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="entries" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MoodEntry" inverseName="tags" inverseEntity="MoodEntry"/>
     </entity>

@@ -79,6 +79,8 @@ struct TagSeeder {
                     tag.name = tagData.name
                     tag.icon = tagData.icon
                     tag.category = tagData.category
+                    tag.isSeeded = true
+
                 } else {
                     print("ℹ️ Tag '\(tagData.name)' already exists, skipping seeding.")
                 }

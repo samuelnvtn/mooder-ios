@@ -40,6 +40,18 @@ final class CoreDataManager: MoodDataManaging {
             return []
         }
     }
+    
+    func fetchOnlySeededTags() -> [MoodTag] {
+        let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
+        request.predicate = NSPredicate(format: "isSeeded == true")
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("❌ Failed to fetch seeded tags: \(error)")
+            return []
+        }
+    }
+
 
     func removeMood(entry: MoodEntry) {
         context.delete(entry)

@@ -16,5 +16,6 @@ protocol MoodDataManaging {
     func fetchMoodForToday() -> MoodEntry?
     func fetchAllTags() -> [MoodTag]
     func saveSyncedMood(from mood: MoodEntryData)
+    func fetchOnlySeededTags() -> [MoodTag] 
 
 }
