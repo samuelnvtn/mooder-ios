@@ -12,7 +12,7 @@ struct HomeScreenView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("How’s your day been?")
+                Text("How’'s your day been?")
                     .font(.title)
                     .bold()
 

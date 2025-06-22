@@ -35,6 +35,13 @@ struct ContentView: View {
                             .tabItem {
                                 Label("Stats", systemImage: "cellularbars")
                             }
+                        
+                        SettingsScreenView(viewModel: SettingsViewModel())
+                            .environmentObject(authViewModel) // 💥 tohle je nutný
+                            .tabItem {
+                                Label("Settings", systemImage: "gearshape")
+                            }
+
                     }
                 } else {
                     LoginRegisterView(viewModel: authViewModel)
