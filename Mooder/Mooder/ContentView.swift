@@ -9,19 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
-    @StateObject private var calendarViewModel = CalendarScreenViewModel(context: CoreDataManager().context)
     @State private var showSplash = true
+    @State private var authSessionID = UUID()
+    
 
     var body: some View {
-        ZStack{
-            if showSplash{
+        ZStack {
+            if showSplash {
                 SplashView()
                     .transition(.opacity)
                     .animation(.easeOut(duration: 1.5), value: showSplash)
             } else {
-                if authViewModel.isLoggedIn {
+                if authViewModel.isLoggedIn && authViewModel.moodsDidSync {
+                    // 💥 vytvoř nový CalendarViewModel až PO synchronizaci
+                    @StateObject var calendarViewModel = CalendarScreenViewModel(context: CoreDataManager().context)
+
                     TabView {
-                        HomeScreenView(viewModel: HomeScreenViewModel(calendarViewModel: calendarViewModel)).environmentObject(authViewModel)
+                        HomeScreenView(viewModel: HomeScreenViewModel(calendarViewModel: calendarViewModel))
+                            .environmentObject(authViewModel)
                             .tabItem {
                                 Label("Home", systemImage: "house")
                             }
@@ -30,26 +35,27 @@ struct ContentView: View {
                             .tabItem {
                                 Label("Calendar", systemImage: "calendar")
                             }
-                        
+
                         StatsScreenView(viewModel: StatsScreenViewModel())
                             .tabItem {
                                 Label("Stats", systemImage: "cellularbars")
                             }
-                        
+
                         SettingsScreenView(viewModel: SettingsViewModel())
-                            .environmentObject(authViewModel) // 💥 tohle je nutný
+                            .environmentObject(authViewModel)
                             .tabItem {
                                 Label("Settings", systemImage: "gearshape")
                             }
-
                     }
+                } else if authViewModel.isLoggedIn && !authViewModel.moodsDidSync {
+                    ProgressView("Loading your data…")
                 } else {
                     LoginRegisterView(viewModel: authViewModel)
                         .onAppear { print("🧾 Showing LoginRegisterView") }
                 }
             }
         }
-        .onAppear() {
+        .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.showSplash = false
             }
@@ -57,5 +63,6 @@ struct ContentView: View {
         .onChange(of: authViewModel.isLoggedIn) { newValue in
             print("🔄 authViewModel.isLoggedIn changed: \(newValue)")
         }
+        .id(authViewModel.didLoginSession)
     }
 }

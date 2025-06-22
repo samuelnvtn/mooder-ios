@@ -17,6 +17,7 @@ class AuthViewModel: ObservableObject {
     @Published var isLoggedIn = false
     @Published var rememberMeChecked = false
     @Published var moodsDidSync = false
+    @Published var didLoginSession = UUID()
 
     private let coreDataManager = CoreDataManager() // reusujeme ho
 
@@ -24,6 +25,7 @@ class AuthViewModel: ObservableObject {
         print("🔁 AuthViewModel INIT \(UUID().uuidString)")
         if isUserPersisted {
             self.isLoggedIn = true
+            self.didLoginSession = UUID()
         }
     }
 
@@ -39,7 +41,9 @@ class AuthViewModel: ObservableObject {
                     }
                     DispatchQueue.main.async {
                         self.isLoggedIn = true
+                        self.moodsDidSync = false
                         self.syncFromFirestore()
+                        self.didLoginSession = UUID()
                     }
                     print("✅ Logged in as \(result?.user.uid ?? "unknown")")
                 }
@@ -79,11 +83,14 @@ class AuthViewModel: ObservableObject {
                         print("✅ User data saved to Firestore")
                         if self.rememberMe {
                             self.isUserPersisted = true
+
                         }
                         DispatchQueue.main.async {
                             self.isLoginMode = true
                             self.isLoggedIn = true
+                            self.moodsDidSync = false
                             self.syncFromFirestore()
+                            self.didLoginSession = UUID()
                         }
                     }
                 }
@@ -93,6 +100,16 @@ class AuthViewModel: ObservableObject {
 
     func toggleMode(toLogin: Bool) {
         isLoginMode = toLogin
+    }
+    
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            self.isLoggedIn = false
+            self.moodsDidSync = false // 💥 Tohle je důležité
+        } catch {
+            print("❌ Failed to sign out: \(error.localizedDescription)")
+        }
     }
 
     func signInWithGoogle() {
@@ -134,7 +151,9 @@ class AuthViewModel: ObservableObject {
                 } else {
                     DispatchQueue.main.async {
                         self.isLoggedIn = true
+                        self.moodsDidSync = false
                         self.syncFromFirestore()
+                        self.didLoginSession = UUID()
                     }
                     print("✅ Logged in with Google")
                 }
@@ -146,26 +165,30 @@ class AuthViewModel: ObservableObject {
         print("🔄 Starting sync from Firestore...")
         let syncManager = FirestoreSyncManager()
 
-        syncManager.onSyncComplete = {
-            DispatchQueue.main.async {
-                print("✅ Firebase sync complete – triggering moodsDidSync")
-                self.moodsDidSync = true
-            }
-        }
-
-        coreDataManager.clearAllMoods()
-
         syncManager.fetchMoods { moods in
             DispatchQueue.main.async {
                 print("📥 Downloaded \(moods.count) moods from Firestore")
+
+                self.coreDataManager.clearAllMoods()
+
                 for mood in moods {
                     self.coreDataManager.saveSyncedMood(from: mood)
                 }
+
                 print("✅ All moods saved to CoreData")
-                // `onSyncComplete` se zavolá uvnitř `FirestoreSyncManager` po tomto
+
+                // TADY TEPRVE SPUSTÍME UI UPDATE
+                syncManager.onSyncComplete = {
+                    DispatchQueue.main.async {
+                        print("✅ Firebase sync complete – triggering moodsDidSync + didLoginSession")
+                        self.moodsDidSync = true
+                        self.didLoginSession = UUID() // TADY AŽ!
+                    }
+                }
+
+                // Spusť ručně, protože onSyncComplete jinak zůstane viset
+                syncManager.onSyncComplete?()
             }
         }
     }
-
-
 }

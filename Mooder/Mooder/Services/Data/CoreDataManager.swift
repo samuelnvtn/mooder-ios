@@ -110,14 +110,25 @@ final class CoreDataManager: MoodDataManaging {
         entry.date = data.date
         entry.note = data.note
 
-        // 💥 OPRAVA: Zpracujeme tagDicts
         if let tagDicts = data.tagDicts {
+            let allTags = fetchAllTags()
             let tags = tagDicts.compactMap { dict -> MoodTag? in
+                let incomingId = UUID(uuidString: dict["id"] as? String ?? "")
+                let incomingName = dict["name"] as? String ?? ""
+
+                if let match = allTags.first(where: { $0.id == incomingId }) {
+                    return match
+                }
+
+                if let match = allTags.first(where: { $0.name == incomingName }) {
+                    return match
+                }
+
                 let tag = MoodTag(context: context)
-                tag.name = dict["name"] as? String ?? ""
-                tag.icon = dict["icon"] as? String ?? ""
-                tag.category = dict["category"] as? String ?? ""
-                tag.id = UUID(uuidString: dict["id"] as? String ?? "") ?? UUID()
+                tag.id = incomingId ?? UUID()
+                tag.name = incomingName
+                tag.icon = dict["icon"] as? String ?? "questionmark"
+                tag.category = dict["category"] as? String ?? "Other"
                 return tag
             }
 

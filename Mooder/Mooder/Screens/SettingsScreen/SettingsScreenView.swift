@@ -87,12 +87,7 @@ struct SettingsScreenView: View {
 
             // Sign Out
             Button(role: .destructive) {
-                do {
-                       try Auth.auth().signOut()
-                       authViewModel.isLoggedIn = false // 💥 tohle dělá tu magii
-                   } catch {
-                       print("❌ Failed to sign out: \(error.localizedDescription)")
-                   }
+                authViewModel.signOut()
             } label: {
                 Text("Sign Out")
                     .bold()
