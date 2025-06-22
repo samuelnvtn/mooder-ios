@@ -61,13 +61,21 @@ struct SettingsScreenView: View {
                 Form {
                     Section(header: Text("Settings:")) {
                         NavigationLink("Legal", destination: Text("Legal Placeholder"))
-                        NavigationLink("Notifications", destination: Text("Notifications Placeholder"))
+                        Toggle("Daily Mood Reminder", isOn: $viewModel.notificationsEnabled)
+                            .onChange(of: viewModel.notificationsEnabled) { enabled in
+                                if enabled {
+                                    NotificationManager.shared.scheduleDailyMoodReminder()
+                                } else {
+                                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["dailyMoodReminder"])
+                                }
+                            }
                         Button("Get Help") {
                             UIApplication.shared.open(helpURL)
                         }
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+            
 
             
 
@@ -86,7 +94,6 @@ struct SettingsScreenView: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.white)
             }
             .padding(.bottom, 16)
         }

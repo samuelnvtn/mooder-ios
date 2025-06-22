@@ -15,6 +15,8 @@ class SettingsViewModel: ObservableObject {
     @Published var userEmail: String = ""
     @Published var userName: String = ""
     @Published var selectedImage: UIImage?
+    
+    @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
 
     init() {
         loadUser()

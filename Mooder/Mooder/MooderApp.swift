@@ -12,7 +12,9 @@ import FirebaseCore
 struct MooderApp: App {
     
     init() {
-    }
+           NotificationManager.shared.configure()
+           NotificationManager.shared.scheduleDailyMoodReminder() // 💡 zavoláš jednou po instalaci / přihlášení
+       }
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
