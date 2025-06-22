@@ -15,6 +15,8 @@ struct SettingsScreenView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     
     let helpURL = URL(string: "https://www.helpguide.org/find-help")!
+    let legalURL = URL(string: "https://docs.google.com/document/d/1xIBsoA-fg-pKKQUVQtk2Z8qWlG2xfURZZfHWptl3pws/edit?usp=sharing")!
+
 
     var body: some View {
 
@@ -60,7 +62,9 @@ struct SettingsScreenView: View {
            
                 Form {
                     Section(header: Text("Settings:")) {
-                        NavigationLink("Legal", destination: Text("Legal Placeholder"))
+                        Button("Legal") {
+                            UIApplication.shared.open(legalURL)
+                        }
                         Toggle("Daily Mood Reminder", isOn: $viewModel.notificationsEnabled)
                             .onChange(of: viewModel.notificationsEnabled) { enabled in
                                 if enabled {
