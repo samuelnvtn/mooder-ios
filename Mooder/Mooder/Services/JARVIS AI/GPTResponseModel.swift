@@ -12,7 +12,7 @@ import Foundation
 final class GPTService {
     static let shared = GPTService()
 
-    private let apiKey = "YOUR_OPENAI_API_KEY" // ⚠️ NEUKLÁDEJ TO TVRDĚ DO APPKY!
+    private let apiKey = "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" // ⚠️ NEUKLÁDEJ TO TVRDĚ DO APPKY!
     private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
 
     func getAdvice(from moodEntries: [MoodEntry], completion: @escaping (String?) -> Void) {
@@ -22,8 +22,12 @@ final class GPTService {
                 let mood = entry.mood
                 let note = entry.note ?? "žádná poznámka"
                 let date = DateFormatter.localizedString(from: entry.date ?? Date(), dateStyle: .medium, timeStyle: .none)
-                return "\(date): nálada \(mood) – \(note)"
+
+                let tags = (entry.tags as? Set<MoodTag>)?.map { $0.name ?? "" }.joined(separator: ", ") ?? "žádné tagy"
+                
+                return "\(date): nálada \(mood) – \(note). Tagy: \(tags)"
             }
+
             .joined(separator: "\n")
 
         let prompt = """
@@ -41,7 +45,7 @@ final class GPTService {
         let requestBody: [String: Any] = [
             "model": "gpt-4",
             "messages": [
-                ["role": "system", "content": "You are a helpful AI coach focused on emotional well-being."],
+                ["role": "system", "content": "You are a helpful AI coach focused on emotional well-being try in 70 words to help user the most."],
                 ["role": "user", "content": prompt]
             ],
             "temperature": 0.8

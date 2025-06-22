@@ -66,16 +66,20 @@ struct StatsScreenView: View {
 
                 // Přehled nálad
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Mood Overview")
-                        .font(.headline)
-                    Text("Average Mood: \(viewModel.state.averageMoodEmoji) \"\(viewModel.state.averageMoodLabel)\"")
-                    Text("Best Week: \(viewModel.state.bestWeekText)")
-                    Text("Worst Week: \(viewModel.state.worstWeekText)")
-                    Text("Mood Streak: \(viewModel.state.streakText)")
+                        Text("Mood Overview")
+                            .font(.headline)
+                        Text("Average Mood: \(viewModel.state.averageMoodEmoji) \"\(viewModel.state.averageMoodLabel)\"")
+                        Text("Best Week: \(viewModel.state.bestWeekText)")
+                        Text("Worst Week: \(viewModel.state.worstWeekText)")
+                        Text("Mood Streak: \(viewModel.state.streakText)")
+                    
+
                 }
                 .padding()
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                GPTTipComponent(moodEntries: viewModel.allMoods)
+
             }
         }
         .navigationTitle("Statistics")
