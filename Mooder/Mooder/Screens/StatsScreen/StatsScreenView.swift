@@ -77,7 +77,6 @@ struct StatsScreenView: View {
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-            .padding()
         }
         .navigationTitle("Statistics")
         .onAppear {
