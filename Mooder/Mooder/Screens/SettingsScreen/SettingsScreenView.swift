@@ -13,64 +13,63 @@ struct SettingsScreenView: View {
     @State private var showPhotoPicker = false
     @State private var selectedItem: PhotosPickerItem? = nil
     @EnvironmentObject var authViewModel: AuthViewModel
+    
+    let helpURL = URL(string: "https://www.helpguide.org/find-help")!
 
     var body: some View {
 
-        VStack {
-            // Header
-            HStack {
-                Button(action: {
-                    dismiss()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                }
-                Spacer()
-                Text("Notifications")
-                    .font(.headline)
-                Spacer()
-                Spacer()
-            }
-            .padding()
+        VStack(alignment: .leading, spacing: 16) {
+            
+            Text("Settings")
+                .font(.title)
+                .bold()
 
             // Avatar + Email
-            VStack(spacing: 8) {
-                Button(action: {
-                    showPhotoPicker = true
-                }) {
-                    if let image = viewModel.selectedImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 120, height: 120)
-                            .clipShape(Circle())
-                    } else {
-                        Image("john_pork") // fallback
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 120, height: 120)
-                            .clipShape(Circle())
+            VStack {
+                VStack(spacing: 8) {
+                    Button(action: {
+                        showPhotoPicker = true
+                    }) {
+                        if let image = viewModel.selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(Circle())
+                        } else {
+                            Image("john_pork") // fallback
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(Circle())
+                        }
                     }
+                    .buttonStyle(.plain)
+
+                    Text(viewModel.userName)
+                        .font(.title2)
+                        .bold()
+
+                    Text(viewModel.userEmail)
+                        .foregroundColor(.gray)
                 }
-                .buttonStyle(.plain)
-
-                Text(viewModel.userName)
-                    .font(.title2)
-                    .bold()
-
-                Text(viewModel.userEmail)
-                    .foregroundColor(.gray)
+                .frame(maxWidth: .infinity)
             }
-            .padding(.top)
 
             // Settings List
-            Form {
-                Section(header: Text("Settings:")) {
-                    NavigationLink("Legal", destination: Text("Legal Placeholder"))
-                    NavigationLink("Notifications", destination: Text("Notifications Placeholder"))
-                    NavigationLink("Get Help", destination: Text("Help Placeholder"))
+           
+                Form {
+                    Section(header: Text("Settings:")) {
+                        NavigationLink("Legal", destination: Text("Legal Placeholder"))
+                        NavigationLink("Notifications", destination: Text("Notifications Placeholder"))
+                        Button("Get Help") {
+                            UIApplication.shared.open(helpURL)
+                        }
+                    }
                 }
-            }
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            
 
             Spacer()
 
@@ -91,6 +90,7 @@ struct SettingsScreenView: View {
             }
             .padding(.bottom, 16)
         }
+        .padding()
         .photosPicker(isPresented: $showPhotoPicker, selection: $selectedItem)
         .onChange(of: selectedItem) { newItem in
             Task {
@@ -101,7 +101,5 @@ struct SettingsScreenView: View {
                 }
             }
         }
-
-        .navigationBarHidden(true)
     }
 }
