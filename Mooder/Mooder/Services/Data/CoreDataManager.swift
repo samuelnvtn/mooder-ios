@@ -4,6 +4,7 @@ import CoreData
 
 final class CoreDataManager: MoodDataManaging {
     private let container = NSPersistentContainer(name: "Mooder")
+    static let shared = CoreDataManager() // 💥 Tohle byl chybějící člen
 
     var context: NSManagedObjectContext {
         container.viewContext

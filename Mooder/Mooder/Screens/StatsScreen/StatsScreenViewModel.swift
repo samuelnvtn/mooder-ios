@@ -34,9 +34,63 @@ class StatsScreenViewModel {
             state.averageMoodEmoji = MoodLabelMapper.emoji(for: avg)
         }
 
-        state.bestWeekText = "🎉 March 12 – Excited"
-        state.worstWeekText = "😭 March 5 – Disappointed"
-        state.streakText = "🔥 5 days feeling good or better"
+        // Tady nová dynamika
+        computeBestAndWorstWeeks(from: moods)
+        computeMoodStreak(from: moods)
+    }
+
+    private func computeBestAndWorstWeeks(from moods: [MoodEntry]) {
+        let groupedByWeek = Dictionary(grouping: moods) { $0.date?.startOfWeek() ?? Date.distantPast }
+        let weekAverages = groupedByWeek.mapValues { entries in
+            entries.map(\.mood).average ?? 0
+        }
+
+        guard let best = weekAverages.max(by: { $0.value < $1.value }),
+              let worst = weekAverages.min(by: { $0.value < $1.value }) else {
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+
+        state.bestWeekText = "🎉 \(formatter.string(from: best.key)) – \(MoodLabelMapper.label(for: best.value))"
+        state.worstWeekText = "😭 \(formatter.string(from: worst.key)) – \(MoodLabelMapper.label(for: worst.value))"
+    }
+
+
+    private func computeMoodStreak(from moods: [MoodEntry]) {
+        let sortedDates = moods.compactMap { $0.date }
+            .sorted()
+            .map { Calendar.current.startOfDay(for: $0) }
+
+        let dateToMood: [Date: Int16] = Dictionary(uniqueKeysWithValues: moods.compactMap {
+            guard let date = $0.date else { return nil }
+            return (Calendar.current.startOfDay(for: date), $0.mood)
+        })
+
+
+        var maxStreak = 0
+        var currentStreak = 0
+        var lastDate: Date?
+
+        for date in sortedDates {
+            guard let mood = dateToMood[date] else { continue }
+
+            if let last = lastDate, Calendar.current.date(byAdding: .day, value: 1, to: last) != date {
+                currentStreak = 0 // přerušeno
+            }
+
+            if mood >= 4 {
+                currentStreak += 1
+                maxStreak = max(maxStreak, currentStreak)
+            } else {
+                currentStreak = 0
+            }
+
+            lastDate = date
+        }
+
+        state.streakText = "🔥 \(maxStreak) day\(maxStreak == 1 ? "" : "s") feeling good or better"
     }
 
     func nextWeek() {
