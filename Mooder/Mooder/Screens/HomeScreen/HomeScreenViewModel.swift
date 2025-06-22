@@ -48,6 +48,7 @@ class HomeScreenViewModel {
         if state.selectedTags.contains(tag) {
             state.selectedTags.removeAll { $0 == tag }
         } else {
+            guard state.selectedTags.count < 10 else { return } // Limit na 10 tagů
             state.selectedTags.append(tag)
         }
     }
@@ -61,7 +62,7 @@ class HomeScreenViewModel {
             state.selectedMood = record.mood
             state.note = record.note
 
-            // ⚠️ Filteruj uložené tagy jen na ty seedované
+            // Filtruj uložené tagy jen na ty seedované
             state.selectedTags = record.tags
 
             state.isMoodSavedToday = true
@@ -69,8 +70,6 @@ class HomeScreenViewModel {
             state.isMoodSavedToday = false
         }
     }
-
-
 
     func saveMood() {
         let entry = dataManager.fetchMoodForToday() ?? MoodEntry(context: dataManager.context)
@@ -88,5 +87,4 @@ class HomeScreenViewModel {
         state.isMoodSavedToday = true
         calendarViewModel?.reloadData()
     }
-
 }
