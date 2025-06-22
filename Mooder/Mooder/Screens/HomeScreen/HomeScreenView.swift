@@ -4,6 +4,8 @@ import SwiftUI
 struct HomeScreenView: View {
   @State private var viewModel: HomeScreenViewModel
   @EnvironmentObject var authViewModel: AuthViewModel
+  @State private var shownTagName: String? = nil
+  @State private var labelPosition: CGPoint? = nil
 
   init(viewModel: HomeScreenViewModel) {
     self._viewModel = State(initialValue: viewModel)
@@ -25,24 +27,63 @@ struct HomeScreenView: View {
               if let mood = viewModel.moodOptions.first(where: { $0.value == viewModel.state.selectedMood }) {
                   Text("Mood: \(mood.emoji) \(mood.label)")
               }
-
+///*
               Text("Details:")
                   .font(.subheadline)
-              //TODO: NEFUNGUJE KDYZ SE PREHLASIM, STEJNY PROBLEM S COREDATA A FIREBASE SYNC ASI???
-              HStack(spacing: 8) {
-                  ForEach(viewModel.state.selectedTags) { tag in
-                      Image(systemName: tag.iconName)
-                          .frame(width: 24, height: 24)
-                          .foregroundColor(.accentColor)
+//TODO: NEFUNGUJE KDYZ SE PREHLASIM, STEJNY PROBLEM S COREDATA A FIREBASE SYNC ASI???
+              if !viewModel.state.selectedTags.isEmpty {
+                  ZStack(alignment: .topLeading) {
+                      HStack(spacing: 8) {
+                          Circle()
+                              .fill(MoodLevel(rawValue: viewModel.state.selectedMood)?.color ?? .secondary)
+                              .frame(width: 8, height: 8)
+                          
+                          ForEach(viewModel.state.selectedTags) { tag in
+                              GeometryReader { geo in
+                                  Button {
+                                      shownTagName = tag.name
+                                      labelPosition = geo.frame(in: .named("capsuleArea")).origin
+                                      DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                          withAnimation(.easeOut(duration: 0.5)) {
+                                              shownTagName = nil
+                                          }
+                                      }
+                                  } label: {
+                                      Image(systemName: tag.iconName)
+                                          .frame(width: 24, height: 24)
+                                          .foregroundColor(.accentColor)
+                                  }
+                              }
+                              .frame(width: 24, height: 24)
+                          }
+                      }
+                      .padding(.horizontal, 12)
+                      .padding(.vertical, 10)
+                      .background(Color(.systemGray5))
+                      .clipShape(Capsule())
+                      .coordinateSpace(name: "capsuleArea")
+                      
+                      if let tagName = shownTagName, let position = labelPosition {
+                          Text(tagName)
+                              .font(.caption2)
+                              .padding(.horizontal, 10)
+                              .padding(.vertical, 4)
+                              .background(Capsule().fill(Color.accentColor.opacity(0.85)))
+                              .foregroundColor(.white)
+                              .position(x: position.x + 12, y: 60)
+                              .transition(.opacity)
+                              .animation(.easeInOut(duration: 0.3), value: shownTagName)
+                      }
                   }
+              } else {
+                  Text("No tags selected.")
+                      .foregroundColor(.gray)
+                      .font(.footnote)
               }
-              .padding(.horizontal, 12)
-              .padding(.vertical, 1)
-              .background(Color(.systemGray5))
-              .clipShape(Capsule())
-              
+// */
               Text("Note:")
                   .font(.subheadline)
+                  .padding(.top, 10)
               
               Text(viewModel.state.note.isEmpty ? "Looks like you did not add any notes..." : viewModel.state.note)
                   .padding()
@@ -136,14 +177,17 @@ struct HomeScreenView: View {
             .padding(.top, 8)
           }
 
-          TextField("Note", text: $viewModel.state.note)
-            .padding(12)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
-            .overlay(
-              RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(.systemGray5), lineWidth: 1)
-            )
+          TextField("Note", text: Binding(
+              get: { String(viewModel.state.note.prefix(200)) },
+              set: { viewModel.state.note = String($0.prefix(200)) }
+          ))
+          .padding(12)
+          .background(Color.gray.opacity(0.1))
+          .cornerRadius(12)
+          .overlay(
+            RoundedRectangle(cornerRadius: 12)
+              .stroke(Color(.systemGray5), lineWidth: 1)
+          )
 
           Button("Save") {
             viewModel.saveMood()

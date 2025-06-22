@@ -62,8 +62,7 @@ class HomeScreenViewModel {
             state.note = record.note
 
             // ⚠️ Filteruj uložené tagy jen na ty seedované
-            let allowedTags = Set(state.allTags)
-            state.selectedTags = record.tags.filter { allowedTags.contains($0) }
+            state.selectedTags = record.tags
 
             state.isMoodSavedToday = true
         } else {

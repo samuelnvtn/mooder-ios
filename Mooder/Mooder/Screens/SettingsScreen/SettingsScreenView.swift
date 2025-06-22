@@ -62,9 +62,6 @@ struct SettingsScreenView: View {
            
                 Form {
                     Section(header: Text("Settings:")) {
-                        Button("Legal") {
-                            UIApplication.shared.open(legalURL)
-                        }
                         Toggle("Daily Mood Reminder", isOn: $viewModel.notificationsEnabled)
                             .onChange(of: viewModel.notificationsEnabled) { enabled in
                                 if enabled {
@@ -75,6 +72,9 @@ struct SettingsScreenView: View {
                             }
                         Button("Get Help") {
                             UIApplication.shared.open(helpURL)
+                        }
+                        Button("Legal") {
+                            UIApplication.shared.open(legalURL)
                         }
                     }
                 }

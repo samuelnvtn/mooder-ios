@@ -85,7 +85,7 @@ struct StatsScreenView: View {
                 .padding(.vertical, 12)
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                //GPTTipComponent(moodEntries: viewModel.allMoods)
+                GPTTipComponent(moodEntries: viewModel.allMoods)
 
             }
             .padding()
