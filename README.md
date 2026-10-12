@@ -16,12 +16,12 @@ Mooder is a native iOS application designed to help users track their daily mood
 ## Screenshots
 
 <div align="center">
-  <img src="Screenshots/splash.png" width="200" alt="Splash Screen"/>
-  <img src="Screenshots/login.png" width="200" alt="Login Screen"/>
-  <img src="Screenshots/mood_entry.png" width="200" alt="Mood Entry"/>
-  <img src="Screenshots/timeline.png" width="200" alt="Timeline"/>
-  <img src="Screenshots/stats.png" width="200" alt="Stats and AI Tip"/>
-  <img src="Screenshots/settings.png" width="200" alt="Settings"/>
+  <img src="splash.png" width="200" alt="Splash Screen"/>
+  <img src="login.png" width="200" alt="Login Screen"/>
+  <img src="mood_entry.png" width="200" alt="Mood Entry"/>
+  <img src="timeline.png" width="200" alt="Timeline"/>
+  <img src="stats.png" width="200" alt="Stats and AI Tip"/>
+  <img src="settings.png" width="200" alt="Settings"/>
 </div>
 
 ## Tech Stack & Architecture
