@@ -4,6 +4,7 @@ import CoreData
 
 final class CoreDataManager: MoodDataManaging {
     private let container = NSPersistentContainer(name: "Mooder")
+    static let shared = CoreDataManager() // 💥 Tohle byl chybějící člen
 
     var context: NSManagedObjectContext {
         container.viewContext
@@ -21,8 +22,15 @@ final class CoreDataManager: MoodDataManaging {
     }
 
     func saveMood(entry: MoodEntry) {
+        if context.insertedObjects.contains(entry) == false {
+            context.insert(entry)
+        }
         save()
+        
+        // Upload do Firestore
+        FirestoreSyncManager().uploadMood(entry)
     }
+
 
     func fetchAllTags() -> [MoodTag] {
         let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
@@ -33,6 +41,18 @@ final class CoreDataManager: MoodDataManaging {
             return []
         }
     }
+    
+    func fetchOnlySeededTags() -> [MoodTag] {
+        let request = NSFetchRequest<MoodTag>(entityName: "MoodTag")
+        request.predicate = NSPredicate(format: "isSeeded == true")
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("❌ Failed to fetch seeded tags: \(error)")
+            return []
+        }
+    }
+
 
     func removeMood(entry: MoodEntry) {
         context.delete(entry)
@@ -51,6 +71,20 @@ final class CoreDataManager: MoodDataManaging {
         }
     }
 
+    func clearAllMoods() {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MoodEntry")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+            print("🧹 Cleared all local moods")
+        } catch {
+            print("❌ Failed to clear moods: \(error.localizedDescription)")
+        }
+    }
+
+    
     func fetchMoodForToday() -> MoodEntry? {
         let request = NSFetchRequest<MoodEntry>(entityName: "MoodEntry")
         let calendar = Calendar.current
@@ -68,6 +102,32 @@ final class CoreDataManager: MoodDataManaging {
             return nil
         }
     }
+    
+    func saveSyncedMood(from data: MoodEntryData) {
+        let entry = MoodEntry(context: context)
+        entry.id = data.id
+        entry.mood = Int16(data.mood)
+        entry.date = data.date
+        entry.note = data.note
+
+        // 💥 OPRAVA: Zpracujeme tagDicts
+        if let tagDicts = data.tagDicts {
+            let tags = tagDicts.compactMap { dict -> MoodTag? in
+                let tag = MoodTag(context: context)
+                tag.name = dict["name"] as? String ?? ""
+                tag.icon = dict["icon"] as? String ?? ""
+                tag.category = dict["category"] as? String ?? ""
+                tag.id = UUID(uuidString: dict["id"] as? String ?? "") ?? UUID()
+                return tag
+            }
+
+            entry.tags = NSSet(array: tags)
+        }
+
+        save()
+    }
+
+
 }
 
 // --- Zde začíná private extension ---

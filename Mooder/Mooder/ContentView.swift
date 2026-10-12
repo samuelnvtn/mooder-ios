@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var authViewModel = AuthViewModel()
+    @StateObject private var calendarViewModel = CalendarScreenViewModel(context: CoreDataManager().context)
     @State private var showSplash = true
 
     var body: some View {
@@ -20,12 +21,12 @@ struct ContentView: View {
             } else {
                 if authViewModel.isLoggedIn {
                     TabView {
-                        HomeScreenView(viewModel: HomeScreenViewModel())
+                        HomeScreenView(viewModel: HomeScreenViewModel(calendarViewModel: calendarViewModel)).environmentObject(authViewModel)
                             .tabItem {
                                 Label("Home", systemImage: "house")
                             }
 
-                        CalendarScreenView(context: CoreDataManager().context)
+                        CalendarScreenView(context: calendarViewModel.context)
                             .tabItem {
                                 Label("Calendar", systemImage: "calendar")
                             }
@@ -34,6 +35,13 @@ struct ContentView: View {
                             .tabItem {
                                 Label("Stats", systemImage: "cellularbars")
                             }
+                        
+                        SettingsScreenView(viewModel: SettingsViewModel())
+                            .environmentObject(authViewModel) // 💥 tohle je nutný
+                            .tabItem {
+                                Label("Settings", systemImage: "gearshape")
+                            }
+
                     }
                 } else {
                     LoginRegisterView(viewModel: authViewModel)

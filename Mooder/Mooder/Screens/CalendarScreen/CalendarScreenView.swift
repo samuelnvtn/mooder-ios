@@ -21,7 +21,7 @@ struct CalendarScreenView: View {
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
-            Text("Mood timeline")
+            Text("Timeline")
                 .font(.title)
                 .bold()
                 .padding(.top)
@@ -61,7 +61,8 @@ struct CalendarScreenView: View {
                             let dateComponents = DateComponents(year: date.year, month: date.month, day: date.day)
                             let startOfDay = calendar.startOfDay(for: calendar.date(from: dateComponents)!)
                             let moodValue = viewModel.state.moodDates[startOfDay]?.mood ?? 0
-                            let moodColor = MoodLevel(rawValue: moodValue)?.color.opacity(0.3) ?? Color.clear
+                            let moodColor = MoodLevel(rawValue: moodValue)?.color.opacity(1) ?? Color.clear
+                            let isSelected = viewModel.state.selectedEntry?.date == startOfDay
                             
                             Button {
                                 viewModel.select(date: startOfDay)
@@ -69,12 +70,19 @@ struct CalendarScreenView: View {
                                 Text("\(date.day)")
                                     .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.8)
                                     .font(.system(size: 10, weight: .light))
-                                    .opacity(1)
+                                    .foregroundColor(moodValue > 0 ? .white : .gray)
                                     .background(moodColor)
                                     .clipShape(Circle())
+                                    .overlay(
+                                        Circle()
+                                            .stroke(isSelected && moodValue > 0 ? Color.blue : Color.clear, lineWidth: 2)
+                                            .animation(.easeOut(duration: 0.3), value: isSelected)
+                                    )
                             }
                         }
                     })
+                }.onAppear {
+                    viewModel.reloadData()   // ⬅️ vždy si znova načti položky
                 }
             }
         }

@@ -12,9 +12,12 @@ import SwiftUI
 class HomeScreenViewModel {
     var state = HomeScreenState()
     private let dataManager: MoodDataManaging
+    private var calendarViewModel: CalendarScreenViewModel?
 
-    init(dataManager: MoodDataManaging = CoreDataManager()) {
+    init(dataManager: MoodDataManaging = CoreDataManager(), calendarViewModel: CalendarScreenViewModel? = nil) {
         self.dataManager = dataManager
+        self.calendarViewModel = calendarViewModel
+        loadToday()
     }
 
     let moodOptions: [(value: Int16, emoji: String, label: String)] = [
@@ -45,25 +48,28 @@ class HomeScreenViewModel {
         if state.selectedTags.contains(tag) {
             state.selectedTags.removeAll { $0 == tag }
         } else {
+            guard state.selectedTags.count < 10 else { return } // Limit na 10 tagů
             state.selectedTags.append(tag)
         }
     }
 
     func loadToday() {
         state.today = Calendar.current.startOfDay(for: Date())
-        state.allTags = dataManager.fetchAllTags().map { MoodTagModel(from: $0) }
+        state.allTags = dataManager.fetchOnlySeededTags().map { MoodTagModel(from: $0) }
 
         if let mood = dataManager.fetchMoodForToday(),
            let record = MoodRecord(from: mood) {
             state.selectedMood = record.mood
-            state.selectedTags = record.tags
             state.note = record.note
+
+            // Filtruj uložené tagy jen na ty seedované
+            state.selectedTags = record.tags
+
             state.isMoodSavedToday = true
         } else {
             state.isMoodSavedToday = false
         }
     }
-
 
     func saveMood() {
         let entry = dataManager.fetchMoodForToday() ?? MoodEntry(context: dataManager.context)
@@ -79,6 +85,6 @@ class HomeScreenViewModel {
         dataManager.saveMood(entry: entry)
 
         state.isMoodSavedToday = true
+        calendarViewModel?.reloadData()
     }
-
 }
